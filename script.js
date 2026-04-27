@@ -19,56 +19,101 @@ const QUESTIONS = [
 ];
 
 const CATEGORIES = {
-    physical:  { label: '身体的疲労',         maxScore: 9 },
-    emotional: { label: '感情・気分の不安定さ', maxScore: 9 },
-    isolation: { label: '孤立感・サポート不足', maxScore: 9 },
-    pressure:  { label: '子育てプレッシャー',  maxScore: 9 },
-    selfcare:  { label: '自己ケア不足',        maxScore: 9 },
+    physical:  { label: '身体的疲労',          maxScore: 9, positive: '体の疲れをある程度コントロールできています。' },
+    emotional: { label: '感情・気分の不安定さ', maxScore: 9, positive: '感情の揺れを自分で受け止められています。' },
+    isolation: { label: '孤立感・サポート不足', maxScore: 9, positive: 'つながりや支えを感じられている部分があります。' },
+    pressure:  { label: '子育てプレッシャー',  maxScore: 9, positive: '子育てに対してバランスよく向き合えています。' },
+    selfcare:  { label: '自己ケア不足',        maxScore: 9, positive: '自分のための時間や余白をある程度確保できています。' },
 };
 
 const RESULT_TYPES = [
     {
         min: 0, max: 10,
         type: '安定状態',
-        comment: 'ストレスは比較的低い状態です。\n今のペースを大切にしながら、自分を労わることも忘れずに。',
+        praise: '自分を整える力が育っています。',
+        comments: [
+            'ストレスが比較的低い状態です。今の自分のペースをそのまま大切にしてください。',
+            '心身のバランスが取れている状態です。小さな心がけが続いている証拠です。',
+            'よく自分を保てています。今しているケアを意識して続けることが大切です。',
+        ],
     },
     {
         min: 11, max: 22,
         type: 'やや蓄積中',
-        comment: 'ストレスが少しずつ溜まってきているようです。\n小さな休息をこまめに取り入れることで、だいぶ楽になるかもしれません。',
+        praise: '多くのことを一生懸命こなせています。',
+        comments: [
+            'ストレスが少しずつ溜まり始めているようです。今のうちに小さな休息を意識的に取り入れましょう。',
+            '頑張りすぎているサインかもしれません。「休むこと」も子育ての大切な一部です。',
+            '疲れが見えてきているかもしれません。一人で全部やろうとしなくて大丈夫です。',
+        ],
     },
     {
         min: 23, max: 34,
         type: 'ストレス高め',
-        comment: 'ストレスがかなり高まっています。\n一人で抱え込まず、誰かに頼ることを意識してみてください。',
+        praise: 'この状態でも向き合い続けていることに価値があります。',
+        comments: [
+            'ストレスがかなり高まっています。完璧を目指さず、誰かに頼ることを意識してみてください。',
+            '心身の疲れが積み重なっています。「助けを求めること」は弱さではありません。',
+            '限界に近いサインが出ているかもしれません。今日、一つだけ手を抜けることを見つけてみましょう。',
+        ],
     },
     {
         min: 35, max: 45,
         type: '要注意',
-        comment: '心身ともに限界に近い可能性があります。\n完璧を目指さなくて大丈夫です。まず休むことを最優先にしましょう。',
+        praise: 'この診断に向き合えた勇気を、まず自分に認めてあげてください。',
+        comments: [
+            '心身ともに限界に近い可能性があります。まず休むことを最優先にしてください。あなたが整うことが、子どもにとっても一番大切です。',
+            '今のあなたはとても頑張っています。でも頑張りすぎは限界を超えます。誰かに話すだけでも楽になれます。',
+            '完璧でなくて大丈夫です。今日一日、子どもと同じ空間にいられた。それだけで十分です。',
+        ],
     },
 ];
 
 const CATEGORY_ADVICE = {
     physical: {
         label: '身体的疲労',
-        advice: '睡眠と休息を最優先にしましょう。「少し横になる」だけでも体は回復します。家事や育児のハードルを下げることも大切です。',
+        advice: '「今日は早く寝る」だけを決めてみましょう。家事は明日に回せます。横になるだけでも体は回復します。',
+        steps: [
+            '今夜、就寝を30分早める',
+            '「やらなくていい家事」を一つ決める',
+            '食事は「手抜きOK」の日を週2回作る',
+        ],
     },
     emotional: {
         label: '感情・気分の不安定さ',
-        advice: '感情を抱え込まず、書き出したり声に出して話す機会をつくりましょう。感情が揺れることは自然なことです。',
+        advice: '感情は抑え込まず、紙に書き出すだけで楽になります。「今日イライラした出来事」を寝る前に3行書いてみてください。',
+        steps: [
+            '今日感じた感情を紙に1行書く',
+            '「イライラした→〇〇だったから」と理由を探す',
+            '信頼できる人に「最近しんどい」と一言伝える',
+        ],
     },
     isolation: {
         label: '孤立感・サポート不足',
-        advice: '一人で抱え込まずに相談しましょう。地域の子育て支援センターやオンラインの親コミュニティも活用できます。',
+        advice: '一人で抱え込まなくて大丈夫です。「話を聞いてもらうだけ」でも気持ちはだいぶ変わります。',
+        steps: [
+            '市区町村の子育て支援センターをWebで調べる',
+            'SNSで共感できる子育てアカウントをフォローする',
+            'パートナーや家族に「今日しんどかった」と伝える',
+        ],
     },
     pressure: {
         label: '子育てプレッシャー',
-        advice: '「完璧な親」は存在しません。失敗しても後から修復できます。「今日も一緒にいた」それだけで十分です。',
+        advice: '「完璧な親」は存在しません。叱ってしまっても「さっきはごめんね」と言えれば、関係は修復できます。',
+        steps: [
+            '「今日もなんとかやった」と寝る前に声に出す',
+            '「子どもに謝る」を弱さでなく強さと捉え直す',
+            '自分の「良い親の基準」を一つだけ下げてみる',
+        ],
     },
     selfcare: {
         label: '自己ケア不足',
-        advice: '1日5分でも自分のための時間をつくりましょう。親が整うことで、子どもへの関わりも自然と変わってきます。',
+        advice: '1日5分で十分です。コーヒーを一人でゆっくり飲む、好きな音楽をかける、それだけでも立派なセルフケアです。',
+        steps: [
+            '子どもが寝た後に「自分だけの5分」を確保する',
+            '好きな飲み物を用意してスマホを置いて飲む',
+            '「何もしない」時間を週1回自分に許可する',
+        ],
     },
 };
 
@@ -167,6 +212,8 @@ function renderResult() {
     const { total, catScores } = calcScores();
     const result = getResultType(total);
 
+    const comment = result.comments[Math.floor(Math.random() * result.comments.length)];
+
     const content = document.getElementById('result-content');
     content.innerHTML = `
         <!-- Score Summary -->
@@ -174,7 +221,8 @@ function renderResult() {
             <div class="score-number">${total}</div>
             <div class="score-denom">/ 45点</div>
             <div class="score-type">${result.type}</div>
-            <p class="score-comment">${result.comment.replace(/\n/g, '<br>')}</p>
+            <p class="score-praise">${result.praise}</p>
+            <p class="score-comment">${comment}</p>
         </div>
 
         <!-- Category Bars -->
@@ -218,26 +266,55 @@ function getCatClass(score, max) {
 }
 
 function renderAdvice(catScores) {
-    const sorted = Object.entries(catScores)
-        .filter(([, score]) => score > 0)
-        .sort((a, b) => b[1] - a[1]);
-
-    if (sorted.length === 0) {
+    const allZero = Object.values(catScores).every(s => s === 0);
+    if (allZero) {
         return '<p class="advice-all-clear">ストレスはほとんど感じていないようです。このペースを大切に続けましょう。</p>';
     }
 
-    return sorted.map(([key]) => {
-        const info = CATEGORY_ADVICE[key];
-        return `
-            <div class="advice-item">
-                <span class="advice-marker"></span>
+    const threshold = 0.34;
+    const sorted = Object.entries(catScores).sort((a, b) => b[1] - a[1]);
+    const doingWell = sorted.filter(([key, score]) => score / CATEGORIES[key].maxScore < threshold);
+    const needsCare = sorted.filter(([key, score]) => score / CATEGORIES[key].maxScore >= threshold);
+
+    // Always show at least one positive item
+    const praiseItems = doingWell.length > 0 ? doingWell : [sorted[sorted.length - 1]];
+
+    let html = '';
+
+    html += '<p class="advice-section-label advice-section-ok">できていること</p>';
+    praiseItems.forEach(([key]) => {
+        html += `
+            <div class="advice-item advice-item-ok">
+                <span class="advice-marker advice-marker-ok"></span>
                 <div class="advice-body">
-                    <span class="advice-cat-name">${info.label}</span>
-                    ${info.advice}
+                    <span class="advice-cat-name advice-cat-ok">${CATEGORIES[key].label}</span>
+                    ${CATEGORIES[key].positive}
                 </div>
             </div>
         `;
-    }).join('');
+    });
+
+    if (needsCare.length > 0) {
+        html += '<p class="advice-section-label">ケアポイント</p>';
+        needsCare.forEach(([key, score]) => {
+            const info = CATEGORY_ADVICE[key];
+            const isHigh = score / CATEGORIES[key].maxScore >= 0.67;
+            html += `
+                <div class="advice-item${isHigh ? ' advice-item-high' : ''}">
+                    <span class="advice-marker${isHigh ? ' advice-marker-high' : ''}"></span>
+                    <div class="advice-body">
+                        <span class="advice-cat-name${isHigh ? ' advice-cat-high' : ''}">${info.label}</span>
+                        ${info.advice}
+                        <ul class="advice-steps">
+                            ${info.steps.map(s => `<li>${s}</li>`).join('')}
+                        </ul>
+                    </div>
+                </div>
+            `;
+        });
+    }
+
+    return html;
 }
 
 // ===== Event Wiring =====

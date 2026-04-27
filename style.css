@@ -306,6 +306,14 @@ body {
     margin-bottom: 16px;
 }
 
+.score-praise {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: #52b788;
+    margin-bottom: 10px;
+    line-height: 1.6;
+}
+
 .score-comment {
     font-size: 0.93rem;
     color: #666;
@@ -405,6 +413,74 @@ body {
     color: #2d6a4f;
     margin-bottom: 3px;
     font-size: 0.88rem;
+}
+
+/* Advice section labels */
+.advice-section-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #aaa;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin: 14px 0 6px;
+}
+
+.advice-section-label:first-child {
+    margin-top: 0;
+}
+
+.advice-section-ok {
+    color: #52b788;
+}
+
+/* Positive "doing well" items */
+.advice-item-ok {
+    background: #f0f7f3;
+    border-radius: 8px;
+    padding: 10px 14px;
+    border-bottom: none !important;
+    margin-bottom: 6px;
+}
+
+.advice-marker-ok {
+    background: #52b788 !important;
+}
+
+.advice-cat-ok {
+    color: #52b788 !important;
+}
+
+/* High-stress items */
+.advice-marker-high {
+    background: #e76f51 !important;
+}
+
+.advice-cat-high {
+    color: #e76f51 !important;
+}
+
+/* Actionable steps list */
+.advice-steps {
+    list-style: none;
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.advice-steps li {
+    font-size: 0.83rem;
+    color: #555;
+    padding: 7px 12px;
+    background: #f5f5f5;
+    border-radius: 6px;
+    line-height: 1.55;
+}
+
+.advice-steps li::before {
+    content: "→ ";
+    color: #52b788;
+    font-weight: 700;
 }
 
 /* All-clear advice */
