@@ -126,7 +126,8 @@ const OPTIONS = [
 
 // ===== State =====
 
-const answers = {}; // { questionId: value }
+let currentIndex = 0;
+let answers = new Array(QUESTIONS.length).fill(null);
 
 // ===== Helpers =====
 
@@ -144,8 +145,8 @@ function calcScores() {
     let total = 0;
     const catScores = Object.fromEntries(Object.keys(CATEGORIES).map(k => [k, 0]));
 
-    QUESTIONS.forEach(q => {
-        const val = answers[q.id] ?? 0;
+    QUESTIONS.forEach((q, i) => {
+        const val = answers[i] ?? 0;
         total += val;
         catScores[q.category] += val;
     });
@@ -153,57 +154,56 @@ function calcScores() {
     return { total, catScores };
 }
 
-// ===== Render Questions =====
+// ===== Render Question (1問ずつ) =====
 
-function renderQuestions() {
-    const container = document.getElementById('questions-container');
-    container.innerHTML = QUESTIONS.map(q => `
-        <div class="question-card" id="card-${q.id}">
-            <p class="question-num">Q${q.id} / 15</p>
-            <p class="question-text">${q.text}</p>
-            <div class="options">
-                ${OPTIONS.map(opt => `
-                    <label class="option-label" data-qid="${q.id}" data-val="${opt.value}">
-                        <input type="radio" name="q${q.id}" value="${opt.value}">
-                        <span class="radio-dot"></span>
-                        ${opt.label}
-                    </label>
-                `).join('')}
-            </div>
-        </div>
-    `).join('');
+function renderQuestion(immediate) {
+    const q = QUESTIONS[currentIndex];
+    const card = document.getElementById('question-card');
 
-    // Attach click handlers
-    container.querySelectorAll('.option-label').forEach(label => {
-        label.addEventListener('click', () => {
-            const qid = Number(label.dataset.qid);
-            const val = Number(label.dataset.val);
-            selectOption(qid, val, label);
-        });
+    if (!immediate) card.style.opacity = '0';
+
+    document.getElementById('q-number').textContent = `Q${q.id} / ${QUESTIONS.length}`;
+    document.getElementById('q-text').textContent = q.text;
+
+    const container = document.getElementById('options-container');
+    container.innerHTML = '';
+    OPTIONS.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn' + (answers[currentIndex] === opt.value ? ' selected' : '');
+        btn.textContent = opt.label;
+        btn.addEventListener('click', () => handleAnswer(opt.value, btn));
+        container.appendChild(btn);
     });
-}
 
-function selectOption(qid, val, clickedLabel) {
-    // Update visual state
-    document.querySelectorAll(`.option-label[data-qid="${qid}"]`).forEach(l => {
-        l.classList.remove('selected');
-    });
-    clickedLabel.classList.add('selected');
-
-    // Mark card as answered
-    const card = document.getElementById(`card-${qid}`);
-    card.classList.add('answered');
-
-    answers[qid] = val;
-    updateProgress();
-}
-
-function updateProgress() {
-    const answered = Object.keys(answers).length;
-    const pct = (answered / QUESTIONS.length) * 100;
+    const pct = (currentIndex / QUESTIONS.length) * 100;
     document.getElementById('progress-fill').style.width = pct + '%';
-    document.getElementById('progress-text').textContent = `${answered} / 15 回答済み`;
-    document.getElementById('btn-submit').disabled = answered < QUESTIONS.length;
+    document.getElementById('progress-text').textContent = `${currentIndex + 1} / ${QUESTIONS.length}`;
+
+    document.getElementById('btn-back').style.visibility = currentIndex === 0 ? 'hidden' : 'visible';
+
+    card.classList.remove('animate');
+    void card.offsetWidth;
+    card.classList.add('animate');
+    if (!immediate) card.style.opacity = '';
+}
+
+function handleAnswer(val, selectedBtn) {
+    document.querySelectorAll('.option-btn').forEach(b => {
+        b.classList.remove('selected');
+        b.disabled = true;
+    });
+    selectedBtn.classList.add('selected');
+    answers[currentIndex] = val;
+
+    setTimeout(() => {
+        currentIndex++;
+        if (currentIndex < QUESTIONS.length) {
+            renderQuestion(false);
+        } else {
+            renderResult();
+            showScreen('screen-result');
+        }
+    }, 320);
 }
 
 // ===== Render Result =====
@@ -320,25 +320,25 @@ function renderAdvice(catScores) {
 // ===== Event Wiring =====
 
 function resetQuiz() {
-    Object.keys(answers).forEach(k => delete answers[k]);
-    renderQuestions();
-    updateProgress();
+    currentIndex = 0;
+    answers.fill(null);
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    renderQuestions();
-
     document.getElementById('btn-start').addEventListener('click', () => {
+        resetQuiz();
+        renderQuestion(true);
         showScreen('screen-quiz');
     });
 
-    document.getElementById('btn-submit').addEventListener('click', () => {
-        renderResult();
-        showScreen('screen-result');
+    document.getElementById('btn-back').addEventListener('click', () => {
+        if (currentIndex > 0) {
+            currentIndex--;
+            renderQuestion(false);
+        }
     });
 
     document.getElementById('btn-retry').addEventListener('click', () => {
-        resetQuiz();
         showScreen('screen-top');
     });
 });
