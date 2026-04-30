@@ -117,6 +117,44 @@ const CATEGORY_ADVICE = {
     },
 };
 
+const GUIDE_TIPS = {
+    physical: [
+        '夜21時以降のスマホをやめて、眠りの質を上げる',
+        '「今週やらなくていい家事」を1つ決めて、省エネモードに入る',
+        '昼間に10分だけ横になる「プチ休憩」を取り入れる',
+        '食事は「栄養より手間なく食べられること」を優先してよい',
+        'お風呂はシャワーのみにして、就寝を30分早める',
+    ],
+    emotional: [
+        '「怒り日記」：イライラした場面を夜に3行だけ書き出す',
+        '「今日のしんどさ」を10点満点で数値化する習慣をつける',
+        '気持ちが落ちたとき、15分だけ外の空気を吸いに出る',
+        '感情に名前をつける：「これは疲れからくる不安だ」と声に出す',
+        '「今日もなんとかやれた」を寝る前に1つ見つけて声に出す',
+    ],
+    isolation: [
+        '自治体の子育て支援センター・ひろばを一度訪問してみる',
+        'パートナーや家族に「今週しんどかった」と1文だけ送る',
+        '同じ年齢の子を持つ親のSNSアカウントをフォローして共感を得る',
+        '週に1回、大人と話す機会を意識的につくる',
+        '断られてもいい。「頼む練習」と思って誰かに一度声をかける',
+    ],
+    pressure: [
+        '「今日の自分の良かったところ」を毎晩1つだけ書く',
+        '「子どもと同じ空間にいられた」だけで合格点にしてよい',
+        '叱ってしまった後は「さっきはごめんね」の一言で十分',
+        '子育て情報を見る時間を1日30分に意識的に制限する',
+        '「〇〇すべき」が浮かんだら「できなくても大丈夫」に言い換える',
+    ],
+    selfcare: [
+        '毎朝・毎晩、1分だけ「自分の気持ち」を確認する時間をつくる',
+        '好きな香り・音・飲み物で「自分だけの5分間」を演出する',
+        '子どもが寝た後の15分を「触れてはいけない自分時間」にする',
+        '月に1度、ひとりで出かける予定を手帳に書き込む',
+        '「今日もよく頑張った」と自分に声をかけてから眠る',
+    ],
+};
+
 const OPTIONS = [
     { value: 0, label: 'ほとんどない' },
     { value: 1, label: 'たまにある'   },
@@ -247,6 +285,13 @@ function renderResult() {
             <h3>ストレスをやわらげるヒント</h3>
             ${renderAdvice(catScores)}
         </div>
+
+        <!-- Guide -->
+        <div class="section-card guide-section">
+            <h3>📚 カテゴリ別セルフケアガイド</h3>
+            <p class="guide-section-sub">あなたのストレス傾向に合わせた、今日からできるケアのヒント集</p>
+            ${renderGuide(catScores)}
+        </div>
     `;
 
     // Animate bars on next frame
@@ -315,6 +360,38 @@ function renderAdvice(catScores) {
     }
 
     return html;
+}
+
+function renderGuide(catScores) {
+    const sorted = Object.entries(CATEGORIES).sort(([aKey], [bKey]) =>
+        (catScores[bKey] / CATEGORIES[bKey].maxScore) - (catScores[aKey] / CATEGORIES[aKey].maxScore)
+    );
+
+    return sorted.map(([key, cat]) => {
+        const pct = catScores[key] / cat.maxScore;
+        let levelClass, levelLabel;
+        if (pct >= 0.67) {
+            levelClass = 'guide-level-high';
+            levelLabel = '注意';
+        } else if (pct >= 0.34) {
+            levelClass = 'guide-level-mid';
+            levelLabel = 'やや高め';
+        } else {
+            levelClass = 'guide-level-low';
+            levelLabel = '良好';
+        }
+        return `
+            <div class="guide-cat-block">
+                <div class="guide-cat-header">
+                    <span class="guide-level-badge ${levelClass}">${levelLabel}</span>
+                    <span class="guide-cat-name">${cat.label}</span>
+                </div>
+                <ul class="guide-tips-list">
+                    ${GUIDE_TIPS[key].map(tip => `<li>${tip}</li>`).join('')}
+                </ul>
+            </div>
+        `;
+    }).join('');
 }
 
 // ===== Event Wiring =====
