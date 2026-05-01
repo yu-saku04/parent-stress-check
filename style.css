@@ -672,6 +672,38 @@ body {
 }
 
 /* ============================================================
+   ANDROID BANNER
+   ============================================================ */
+.android-banner {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: linear-gradient(135deg, #1a1a2e, #16213e);
+  border-radius: var(--radius-lg);
+  padding: 20px 22px;
+  margin-top: 24px;
+}
+
+.android-banner-icon {
+  font-size: 36px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.android-banner-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 4px;
+}
+
+.android-banner-sub {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.65);
+  line-height: 1.5;
+}
+
+/* ============================================================
    RESPONSIVE
    ============================================================ */
 @media (min-width: 480px) {
